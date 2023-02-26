@@ -2,8 +2,11 @@ import logo from "./logo.svg";
 import "./App.css";
 import TodoTable from "./components/TodoTable";
 import React, { useState } from "react";
+import NewTodoFormComponent from "./components/NewTodoForm";
 
 function App() {
+  const [showAddTodoForm, setShowAddTodoForm] = useState(false);
+
   const [todos, setTodo] = useState([
     {
       rowNumber: 1,
@@ -17,15 +20,27 @@ function App() {
     },
   ]);
 
-  const addTodo = () => {
-    if (todos.length > 0) {
-      const newTodos = {
-        rowNumber: todos.length + 1,
-        rowDescription: "HAHAHAHXDD",
-        rowAssigned: "LOLHAHXDD",
-      };
-      setTodo((todos) => [...todos, newTodos]);
-    }
+  const addTodo = (descriptionChanged, assignedChanged) => {
+    let rowNo = 0;
+    if (todos.length > 0) rowNo = todos[todos.length - 1].rowNumber + 1;
+    else rowNo = 1;
+
+    const newTodos = {
+      rowNumber: rowNo,
+      rowDescription: descriptionChanged,
+      rowAssigned: assignedChanged,
+    };
+    setTodo((todos) => [...todos, newTodos]);
+
+    console.log(rowNo);
+  };
+
+  const deleteTodo = (deleteRowNumber) => {
+    let deletedRowNumber = todos.filter(function (value) {
+      return value.rowNumber !== deleteRowNumber;
+    });
+
+    setTodo(deletedRowNumber);
   };
 
   return (
@@ -33,17 +48,17 @@ function App() {
       <div className="card">
         <div className="card-header">Your todo's</div>
         <div className="card-body">
-          <TodoTable todos={todos} />
-          <a
-            name=""
-            id=""
+          <TodoTable todos={todos} deleteTodo={deleteTodo} />
+          <button
             className="btn btn-primary"
-            href="#"
-            role="button"
-            onClick={addTodo}
+            onClick={() => setShowAddTodoForm(!showAddTodoForm)}
           >
-            Add new todo
-          </a>
+            {showAddTodoForm ? "Close todo form!" : "Click to add new todo!"}
+          </button>
+
+          {showAddTodoForm && (
+            <NewTodoFormComponent addTodo={addTodo}></NewTodoFormComponent>
+          )}
         </div>
       </div>
     </div>
